@@ -1,0 +1,139 @@
+10-17 11:45:47.595   999  1579 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.turbostack.tsmobilestandalone/.MainActivity bnds=[360,941][532,1181]} from uid 10137, pid 1643
+10-17 11:45:47.636   999  1579 I ActivityTaskManager: ->startActivity for ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0} result:START_SUCCESS
+10-17 11:45:47.640   999  1579 I ActivityTaskManager: Add pending draw ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0}
+10-17 11:45:47.645   999  1480 D PerformanceDatabaseControl: querymem pkgName = com.turbostack.tsmobilestandalone
+10-17 11:45:47.646   999  1031 D ActivityManager: PROFILE_FROM_SHELL is disabled for ProcessRecord{a498cb7 0:com.turbostack.tsmobilestandalone/u0a212}
+10-17 11:45:47.647   999  1244 D os.fingerprint: onActivityResume next:ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0}
+10-17 11:45:47.647   999  1244 D os.fingerprint: activityComponent = ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} inMultiWindow = false
+10-17 11:45:47.649   999  1480 D AppStartScene: doFastKillForAppStart:com.turbostack.tsmobilestandalone,memAvail:59
+10-17 11:45:47.651   999  1051 D ActivityManager: asking zygote to start proc:ProcessRecord{a498cb7 0:com.turbostack.tsmobilestandalone/u0a212}
+10-17 11:45:47.684   999  1051 I ActivityManager: Start proc 14644:com.turbostack.tsmobilestandalone/u0a212 for next-top-activity {com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity}
+10-17 11:45:47.727   999  1579 V WindowState: toString mSurfaceNameCache= mLastTitle=null title=Splash Screen com.turbostack.tsmobilestandalone
+10-17 11:45:47.728   999  1579 D CoreBackPreview: Window{f9ee03e u0 Splash Screen com.turbostack.tsmobilestandalone}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@2275bec, mPriority=0}
+10-17 11:45:47.859   999  1244 D WindowManager: finishDrawing: syncSeqId=0, postDrawTransaction=android.view.SurfaceControl$Transaction@6a4c24a, mSyncState=0, mDrawState=1, hasSyncHandlers=false, mClientWasDrawingForSync=false, win=Window{f9ee03e u0 Splash Screen com.turbostack.tsmobilestandalone}-[Surface(name=*Title#38327)/@0xd4c3bb5]
+10-17 11:45:48.054   999  1244 D os.ActivityManagerServiceLice: make process active com.turbostack.tsmobilestandalone(14644)
+10-17 11:45:48.111   999  1244 I AppsFilter: interaction: PackageSetting{4759cf0 com.turbostack.tsmobilestandalone/10212} -> PackageSetting{47c88fe com.android.launcher3/10137} BLOCKED
+10-17 11:45:48.112   999  1244 D os.fingerprint: onRealStartActivityLocked next:ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0} isKeyguardShowing:false
+10-17 11:45:48.112   999  1244 D os.fingerprint: activityComponent = ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} inMultiWindow = false
+10-17 11:45:48.113   999  1244 D os.fingerprint: onUpdateFocusedApp oldPackageName:com.android.launcher3 oldComponent:ComponentInfo{com.android.launcher3/com.android.launcher3.Launcher3QuickStepGo} newPackageName:com.turbostack.tsmobilestandalone newComponent:ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} mFm :android.hardware.fingerprint.FingerprintManager@dada6b5
+10-17 11:45:48.116   999  1244 D WindowManager: setFocusedApp mFocusedApp = ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0}displayId = 0Callers = com.android.server.wm.ActivityTaskManagerService.setResumedActivityUncheckLocked:4968 com.android.server.wm.TaskFragment.onActivityStateChanged:770 com.android.server.wm.ActivityRecord.setState:5665 com.android.server.wm.Task.minimalResumeActivityLocked:4831 
+10-17 11:45:48.119   999  1244 D os.fingerprint: onActivityResume next:ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0}
+10-17 11:45:48.119   999  1244 D os.fingerprint: activityComponent = ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} inMultiWindow = false
+10-17 11:45:49.250   999  1051 I ActivityManager: Start proc 14673:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i609 for  {com.turbostack.tsmobilestandalone/org.chromium.content.app.SandboxedProcessService0:0}
+10-17 11:46:32.713   999  1018 D os.fingerprint: onUpdateFocusedApp oldPackageName:com.turbostack.tsmobilestandalone oldComponent:ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} newPackageName:com.android.launcher3 newComponent:ComponentInfo{com.android.launcher3/com.android.launcher3.Launcher3QuickStepGo} mFm :android.hardware.fingerprint.FingerprintManager@dada6b5
+10-17 11:46:32.806   999  1480 D PerformanceDatabaseControl: querymem pkgName = com.turbostack.tsmobilestandalone
+10-17 11:46:32.809   999  1480 D PerformanceDatabaseControl: querycount pkgName = com.turbostack.tsmobilestandalone
+10-17 11:46:32.810   999  1480 D PerformanceDatabaseControl: updateDatabase pkgName = com.turbostack.tsmobilestandalone
+10-17 11:46:32.814   999  1480 D AppStartScene: updateAPPMem:pkgName= com.turbostack.tsmobilestandalone,memAvail:62
+10-17 11:46:33.205   999  1031 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t2815 d0}
+10-17 11:46:33.473   999  1031 I ActivityManager: Killing 14644:com.turbostack.tsmobilestandalone/u0a212 (adj 1001): remove task
+10-17 11:46:33.550   999  1019 D Griffin/ComponentManager: Limit Start proc com.turbostack.tsmobilestandalone restart for 3rd-normal
+10-17 11:46:33.552   999  1019 D os.ActivityManagerServiceLice: make process inactive com.turbostack.tsmobilestandalone(14644)
+10-17 11:46:34.854   999  1029 W ActivityTaskManager: getAssistContextExtras failed: timeout retrieving from ActivityRecord{b83eddb u0 com.turbostack.tsmobilestandalone/.MainActivity} t-1 d0 f}}
+10-17 11:48:02.579 23585 23585 I Finsky  : [2] VerifyApps: Install-time verification requested for package com.turbostack.tsmobilestandalone, PackageManager id = 70, Verifier id = a859994f-34f7-4017-a815-ff821076b436
+10-17 11:48:02.781 23585 23625 I Finsky  : [265] VerifyApps: [ADV] Starting verification task for com.turbostack.tsmobilestandalone (id=70)
+10-17 11:48:02.782 23585 23625 I Finsky  : [265] VerifyApps: [ADV] Calling Verifier app for com.turbostack.tsmobilestandalone
+10-17 11:48:03.085 23585 23623 I Finsky  : [263] VerifyApps: [ADV] Calling Verifier app for com.turbostack.tsmobilestandalone
+10-17 11:48:03.085 23585 23623 I Finsky  : [263] VerifyApps: [ADV] Call Strategy for com.turbostack.tsmobilestandalone (id=70): CALL_VERIFIER_APP
+10-17 11:48:03.104 23585 23623 I Finsky  : [263] VerifyApps: [ADV] Calling Verifier app for com.turbostack.tsmobilestandalone (id=70)
+10-17 11:48:03.199 23585 23621 I Finsky  : [261] VerifyApps: [ADV] Verifier app is not installed. Passing by default for com.turbostack.tsmobilestandalone (id=70)
+10-17 11:48:03.201 23585 23621 I Finsky  : [261] VerifyApps: [ADV] Scan finished for com.turbostack.tsmobilestandalone (id=70) with verdict 0
+10-17 11:48:03.202 23585 23621 I Finsky  : [261] VerifyApps: [ADV] Enforcing policy 0 for com.turbostack.tsmobilestandalone. Scan verdict: 0
+10-17 11:48:03.204 23585 23621 I Finsky  : [261] VerifyApps: [ADV] Enforced verdict for com.turbostack.tsmobilestandalone: VERIFICATION_ALLOW
+10-17 11:48:03.206 23585 23621 I Finsky  : [261] VerifyApps: [ADV] Policy enforced for com.turbostack.tsmobilestandalone (id=70). Verdict: VERIFICATION_ALLOW
+10-17 11:48:03.209 23585 14873 I Finsky  : [679] VerifyApps: Anti-malware verification task started for package=com.turbostack.tsmobilestandalone
+10-17 11:48:03.614 23585 14873 I Finsky  : [679] VerifyApps: chooseScanResult for package=com.turbostack.tsmobilestandalone with timeout=15000ms
+10-17 11:48:03.619 23585 23621 I Finsky  : [261] VerifyApps: Starting APK Analysis scan for com.turbostack.tsmobilestandalone.
+10-17 11:48:03.620 23585 23621 I Finsky  : [261] Scanning package com.turbostack.tsmobilestandalone contents with client side protections. File: [mMJNyf3mVL0OaypbNWSO0yEtljziWUEeOiFFBLyNhV8]
+10-17 11:48:03.621 23585 23621 I Finsky  : [261] VerifyApps: APK Analysis scan finished for com.turbostack.tsmobilestandalone. Verdict: 0
+10-17 11:48:03.622 23585 14873 I Finsky  : [679] VerifyApps: firstScanResult for package=com.turbostack.tsmobilestandalone: 0
+10-17 11:48:04.384 23585 14874 I Finsky  : [680] VerifyApps: Verification package=com.turbostack.tsmobilestandalone, id=70, response=0, upload_requested=false, enable_ecm=false
+10-17 11:48:04.388 23585 14874 I Finsky  : [680] VerifyApps: PAM result saving to datastore delayed for package: com.turbostack.tsmobilestandalone
+10-17 11:48:04.389 23585 14873 I Finsky  : [679] VerifyApps: overallScanResult for package=com.turbostack.tsmobilestandalone: 0
+10-17 11:48:04.389 23585 14873 I Finsky  : [679] VerifyApps: chooseScanResult returning verdict 0 for package=com.turbostack.tsmobilestandalone
+10-17 11:48:04.441 23585 23585 I Finsky  : [2] VerifyApps: Install-time verification complete: id=70, package_name=com.turbostack.tsmobilestandalone
+10-17 11:48:04.455   999  1079 D PackageManager: overrideInstallLocation: com.turbostack.tsmobilestandalone recommendedInstallLocation = 1 installLocation = -1
+10-17 11:48:04.494   999  1079 D PackageManager: Replace existing package: com.turbostack.tsmobilestandalone
+10-17 11:48:04.494   999  1079 D PackageManager: Existing package for signature checking: PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212}
+10-17 11:48:04.494   999  1079 D PackageManager: Existing package: PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212}
+10-17 11:48:04.499   999  1079 D PackageManager: Renaming /data/app/vmdl2058740696.tmp to /data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==
+10-17 11:48:04.507   999  1079 D PackageManager: replacePackageLI: new=Package{628b6cd com.turbostack.tsmobilestandalone}, old=Package{2b9320e com.turbostack.tsmobilestandalone}
+10-17 11:48:04.507   999  1079 D PackageManager: replaceNonSystemPackageLI: new=Package{628b6cd com.turbostack.tsmobilestandalone}, old=Package{2b9320e com.turbostack.tsmobilestandalone}
+10-17 11:48:04.507   999  1050 I ActivityManager: Force stopping com.turbostack.tsmobilestandalone appid=10212 user=-1: installPackageLI
+10-17 11:48:04.526   999  1079 I PackageManager: Update package com.turbostack.tsmobilestandalone code path from /data/app/~~SeC2frxViABcNG0PnlFXzQ==/com.turbostack.tsmobilestandalone-74D6Vw6Tl5Jjc8PgjsxCuw== to /data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==; Retain data and using new
+10-17 11:48:04.530   999  1079 I AppsFilter: interaction: PackageSetting{2447aa4 com.com.styler.app.styler/10198} -> PackageSetting{4d6467e com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.531   999  1079 I AppsFilter: interaction: PackageSetting{807760c com.com.styler.app.styler_http/10200} -> PackageSetting{4d6467e com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.531   999  1079 I AppsFilter: interaction: PackageSetting{5044ec9 com.com.turbostack.app.turbostackmobile/10210} -> PackageSetting{4d6467e com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.531   999  1079 D PackageManager: Removing non-system package: com.turbostack.tsmobilestandalone
+10-17 11:48:04.538   999  1079 I AppsFilter: interaction: PackageSetting{2447aa4 com.com.styler.app.styler/10198} -> PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.538   999  1079 I AppsFilter: interaction: PackageSetting{807760c com.com.styler.app.styler_http/10200} -> PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.538   999  1079 I AppsFilter: interaction: PackageSetting{5044ec9 com.com.turbostack.app.turbostackmobile/10210} -> PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.538   999  1079 D PackageManager: removePackageDataLI: PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212}
+10-17 11:48:04.540   999  1079 D PackageManager:   Permissions: com.turbostack.tsmobilestandalone.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+10-17 11:48:04.562   999  1079 D PackageManager: New package installed in /data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==
+10-17 11:48:04.927   999  1079 V PackageManager: restoreAndPostInstall userId=-1 package=Package{628b6cd com.turbostack.tsmobilestandalone}
+10-17 11:48:04.928   999  1079 I AppsFilter: interaction: PackageSetting{2447aa4 com.com.styler.app.styler/10198} -> PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.928   999  1079 I AppsFilter: interaction: PackageSetting{807760c com.com.styler.app.styler_http/10200} -> PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.928   999  1079 I AppsFilter: interaction: PackageSetting{5044ec9 com.com.turbostack.app.turbostackmobile/10210} -> PackageSetting{9aafd4b com.turbostack.tsmobilestandalone/10212} BLOCKED
+10-17 11:48:04.945   999  1079 D TranPkmsExtImpl_itel: onPackageReplace() called with: packageName = [com.turbostack.tsmobilestandalone]
+10-17 11:48:04.946   999  1079 I ActivityManager: Force stopping com.turbostack.tsmobilestandalone appid=10212 user=0: pkg removed
+10-17 11:48:05.008 12987 12987 W msgr.AppInfoCore: Install status cache EVICT for com.turbostack.tsmobilestandalone (package changed)
+10-17 11:48:05.121  2008  2008 I MediaProvider: Invalidating LocalCallingIdentity cache for package com.turbostack.tsmobilestandalone. Reason: package android.intent.action.PACKAGE_REMOVED
+10-17 11:48:05.143 23585 23585 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.turbostack.tsmobilestandalone]
+10-17 11:48:05.182 23585 23620 I Finsky  : [260] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.turbostack.tsmobilestandalone]
+10-17 11:48:05.188   999  1196 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10212, mPackageName='com.turbostack.tsmobilestandalone, mAppProcessToken='null'}
+10-17 11:48:05.202 31563 31563 D MediaPlayerList: Name of package changed: com.turbostack.tsmobilestandalone
+10-17 11:48:05.208 12987 12987 W msgr.AppInfoCore: Install status cache EVICT for com.turbostack.tsmobilestandalone (package changed)
+10-17 11:48:05.370   999  1196 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10212, mPackageName='com.turbostack.tsmobilestandalone, mAppProcessToken='null'}
+10-17 11:48:05.386 23585 23585 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.turbostack.tsmobilestandalone]
+10-17 11:48:05.389 23585 23625 I Finsky  : [265] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.turbostack.tsmobilestandalone]
+10-17 11:48:05.397 23585 14886 I Finsky  : [687] Asset module broadcast after update successful for package com.turbostack.tsmobilestandalone.
+10-17 11:48:05.597   999   999 D Griffin/StateProvider: Package removed: android.intent.action.PACKAGE_REMOVED, pkg = com.turbostack.tsmobilestandalone
+10-17 11:48:05.605   999  1079 D AppHideDisabledHelper_itel: deal for SetupWizard configNeedUnhidePackage: com.turbostack.tsmobilestandalone mConfigUnhidePackageList: [com.transsion.itel.manual, com.android.calendar, com.google.android.calendar, com.afmobigroup.gphone, com.transsnet.chat, com.yomobigroup.chat, com.vskit.lite, com.hatsune.eagleee, in.mohalla.sharechat, com.kikaoem.qisiemoji.inputmethod.itel.se, com.itel.weather, com.afmobi.boomplayer, com.zaz.musicplayer, com.qidian.Int.reader.transread, com.transread.novel.story.lite, com.transsnet.palmpay, com.transsnetfinancial.palmcredit]
+10-17 11:48:05.688  1236  1236 D CarrierSvcBindHelper: onPackageUpdateFinished: com.turbostack.tsmobilestandalone
+10-17 11:48:05.692  1236  1236 D CarrierSvcBindHelper: onPackageModified: com.turbostack.tsmobilestandalone
+10-17 11:48:05.802   999   999 I Telecom : CarModeTracker: Package com.turbostack.tsmobilestandalone is not tracked.: SSH.oR@O3g
+10-17 11:48:05.848  1236  1236 D CarrierSvcBindHelper: onPackageUpdateFinished: com.turbostack.tsmobilestandalone
+10-17 11:48:05.849   999  1201 D SSense.AppInfoUtil: new APK:com.turbostack.tsmobilestandalone is installed! for userId:0
+10-17 11:48:05.850  1236  1236 D CarrierSvcBindHelper: onPackageModified: com.turbostack.tsmobilestandalone
+10-17 11:48:05.852  1236  1236 D CarrierSvcBindHelper: onPackageUpdateFinished: com.turbostack.tsmobilestandalone
+10-17 11:48:05.854  1236  1236 D CarrierSvcBindHelper: onPackageModified: com.turbostack.tsmobilestandalone
+10-17 11:48:05.898  1236  1236 D ImsResolver: maybeAddedImsService, packageName: com.turbostack.tsmobilestandalone
+10-17 11:48:05.939   999   999 D Griffin/StateProvider: Package added: android.intent.action.PACKAGE_ADDED, pkg = com.turbostack.tsmobilestandalone
+10-17 11:48:06.113   999  1201 D SSense.AppInfoUtil: new APK:com.turbostack.tsmobilestandalone is installed! for userId:0
+10-17 11:48:06.241   999   999 W AlarmManager: Package com.turbostack.tsmobilestandalone, uid 10212 lost permission to set exact alarms!
+10-17 11:48:06.321  1643  1643 D UNISOC-LAUNCHER3: LauncherAppMonitor, onPackagesUpdated, packageNames:[com.turbostack.tsmobilestandalone] user:UserHandle{0} type:2
+10-17 11:48:06.900   999  1075 E VerityUtils: Failed to measure fs-verity, errno 1: /data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==/base.apk
+10-17 11:48:07.100 13171 14894 W SQLiteLog: (28) double-quoted string literal: "com.turbostack.tsmobilestandalone"
+10-17 11:48:07.340   999  1075 E VerityUtils: Failed to measure fs-verity, errno 1: /data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==/base.apk
+10-17 11:48:07.950   999  1485 D PowerController.BgClean: new APK:com.turbostack.tsmobilestandalone is installed! for userId:0
+10-17 11:48:08.113   999  1485 D PowerController.BgClean: new APK:com.turbostack.tsmobilestandalone is installed! for userId:0
+10-17 11:48:16.977   999  1460 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.turbostack.tsmobilestandalone/.MainActivity bnds=[360,796][532,1036]} from uid 10137, pid 1643
+10-17 11:48:17.056   999  1480 D PerformanceDatabaseControl: querymem pkgName = com.turbostack.tsmobilestandalone
+10-17 11:48:17.062   999  1480 D AppStartScene: doFastKillForAppStart:com.turbostack.tsmobilestandalone,memAvail:62
+10-17 11:48:17.103   999  1460 I ActivityTaskManager: ->startActivity for ActivityRecord{a155c67 u0 com.turbostack.tsmobilestandalone/.MainActivity} t2816 d0} result:START_SUCCESS
+10-17 11:48:17.109   999  1460 I ActivityTaskManager: Add pending draw ActivityRecord{a155c67 u0 com.turbostack.tsmobilestandalone/.MainActivity} t2816 d0}
+10-17 11:48:17.117   999  1031 D ActivityManager: PROFILE_FROM_SHELL is disabled for ProcessRecord{7115803 0:com.turbostack.tsmobilestandalone/u0a212}
+10-17 11:48:17.130   999  1051 D ActivityManager: asking zygote to start proc:ProcessRecord{7115803 0:com.turbostack.tsmobilestandalone/u0a212}
+10-17 11:48:17.131   999  2159 D os.fingerprint: onActivityResume next:ActivityRecord{a155c67 u0 com.turbostack.tsmobilestandalone/.MainActivity} t2816 d0}
+10-17 11:48:17.131   999  2159 D os.fingerprint: activityComponent = ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} inMultiWindow = false
+10-17 11:48:17.190   999  2159 V WindowState: toString mSurfaceNameCache= mLastTitle=null title=Splash Screen com.turbostack.tsmobilestandalone
+10-17 11:48:17.191   999  2159 D CoreBackPreview: Window{27abc75 u0 Splash Screen com.turbostack.tsmobilestandalone}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@f525298, mPriority=0}
+10-17 11:48:17.197   999  1051 I ActivityManager: Start proc 15274:com.turbostack.tsmobilestandalone/u0a212 for next-top-activity {com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity}
+10-17 11:48:17.358   999  2161 D WindowManager: finishDrawing: syncSeqId=0, postDrawTransaction=android.view.SurfaceControl$Transaction@1660044, mSyncState=0, mDrawState=1, hasSyncHandlers=false, mClientWasDrawingForSync=false, win=Window{27abc75 u0 Splash Screen com.turbostack.tsmobilestandalone}-[Surface(name=*Title#38349)/@0x5182d57]
+10-17 11:48:17.469   690   690 I Layer   : fillInputInfo layer:Splash Screen com.turbostack.tsmobilestandalone#38349, visible=1 (hasInputInfo:1, isHidden:0, alpha:0.291504, mActiveBuffer:2), parent:27abc75 Splash Screen com.turbostack.tsmobilestandalone#38348, parenthidden:0
+10-17 11:48:17.644   999  3474 D SmartBandWith_Controller2: [onTaskStackChanged] topPackage = com.turbostack.tsmobilestandalone, mForegroundPackage = com.android.launcher3
+10-17 11:48:17.718   999  2161 D os.ActivityManagerServiceLice: make process active com.turbostack.tsmobilestandalone(15274)
+10-17 11:48:17.773   999  2161 I AppsFilter: interaction: PackageSetting{e9bff16 com.turbostack.tsmobilestandalone/10212} -> PackageSetting{47c88fe com.android.launcher3/10137} BLOCKED
+10-17 11:48:17.774   999  2161 D os.fingerprint: onRealStartActivityLocked next:ActivityRecord{a155c67 u0 com.turbostack.tsmobilestandalone/.MainActivity} t2816 d0} isKeyguardShowing:false
+10-17 11:48:17.774   999  2161 D os.fingerprint: activityComponent = ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} inMultiWindow = false
+10-17 11:48:17.775   999  2161 D os.fingerprint: onUpdateFocusedApp oldPackageName:com.android.launcher3 oldComponent:ComponentInfo{com.android.launcher3/com.android.launcher3.Launcher3QuickStepGo} newPackageName:com.turbostack.tsmobilestandalone newComponent:ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} mFm :android.hardware.fingerprint.FingerprintManager@dada6b5
+10-17 11:48:17.785   999  2161 D WindowManager: setFocusedApp mFocusedApp = ActivityRecord{a155c67 u0 com.turbostack.tsmobilestandalone/.MainActivity} t2816 d0}displayId = 0Callers = com.android.server.wm.ActivityTaskManagerService.setResumedActivityUncheckLocked:4968 com.android.server.wm.TaskFragment.onActivityStateChanged:770 com.android.server.wm.ActivityRecord.setState:5665 com.android.server.wm.Task.minimalResumeActivityLocked:4831 
+10-17 11:48:17.791   999  2161 D os.fingerprint: onActivityResume next:ActivityRecord{a155c67 u0 com.turbostack.tsmobilestandalone/.MainActivity} t2816 d0}
+10-17 11:48:17.791   999  2161 D os.fingerprint: activityComponent = ComponentInfo{com.turbostack.tsmobilestandalone/com.turbostack.tsmobilestandalone.MainActivity} inMultiWindow = false
+10-17 11:48:18.003 15274 15274 D nativeloader: Configuring clns-4 for other apk /data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==/base.apk. target_sdk_version=34, uses_libraries=, library_path=/data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==/lib/arm:/data/app/~~uHIPQT6PcHxh75A7cTq6bw==/com.turbostack.tsmobilestandalone-WIjPTlgJsj0NHov8JnSlcg==/base.apk!/lib/armeabi-v7a, permitted_path=/data:/mnt/expand:/data/user/0/com.turbostack.tsmobilestandalone
+10-17 11:48:18.043 15274 15274 V GraphicsEnvironment: ANGLE Developer option for 'com.turbostack.tsmobilestandalone' set to: 'default'
+10-17 11:48:18.045 15274 15274 V GraphicsEnvironment: ANGLE GameManagerService for com.turbostack.tsmobilestandalone: false
+10-17 11:48:18.789   999  1051 I ActivityManager: Start proc 15308:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i610 for  {com.turbostack.tsmobilestandalone/org.chromium.content.app.SandboxedProcessService0:0}
+10-17 11:48:19.220 15274 15274 I System.out: Chemin de la BDD : /data/user/0/com.turbostack.tsmobilestandalone/databases/ma_base.db
+10-17 11:48:19.286 1527
