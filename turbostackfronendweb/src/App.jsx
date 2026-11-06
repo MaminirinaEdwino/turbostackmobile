@@ -28,7 +28,7 @@ import { setActualWindow } from "./appSlice";
 import LandingPage from "./landingPage";
 import DownloadApp from "./download";
 import NotFoundPage from "./notfound";
-import { Settings } from "lucide-react";
+import { HelpCircle, Settings } from "lucide-react";
 import LanguageToggle from "./components/languageToggle";
 import DarkModeToggle from "./components/darkModeToggle";
 
@@ -133,7 +133,7 @@ function App() {
     }
   };
 
- 
+
 
   return (
     <>
@@ -159,17 +159,19 @@ function App() {
           </div>
         </div> : <>
           <div className={"fixed right-2 bottom-30 gap-1 flex flex-col items-end z-50"}>
-            {setttingMenuState && <>
-              <LanguageToggle />
-              <button
-                title="Help Section"
-                onClick={() => setIsDocOpen(true)}
-                className="px-4 z-50 py-2 bg-couleur1 text-white rounded-lg bottom-35"
-              >
-                ?
-              </button>
-              <DarkModeToggle />
-            </>}
+            {setttingMenuState && (
+              <div className="flex flex-col sm:flex-row items-center gap-3 animate-in fade-in slide-in-from-bottom-3 duration-300 ease-out z-50">
+                <LanguageToggle />
+                <button
+                  title="Help Section"
+                  onClick={() => setIsDocOpen(true)}
+                  className="z-50 p-3.5 bg-couleur1 text-white rounded-2xl shadow-sm hover:shadow-md hover:bg-opacity-90 transition-all duration-200 active:scale-95 flex items-center justify-center font-bold text-sm"
+                >
+                  <HelpCircle size={18} />
+                </button>
+                <DarkModeToggle />
+              </div>
+            )}
             <div className={"p-3 rounded-full border border-couleur1/50 " + (setttingMenuState ? "text-white bg-couleur1" : "text-couleur1 bg-couleur1/10")} onClick={() => setSettingMenuState(!setttingMenuState)}>
               <Settings size={18} />
             </div>
