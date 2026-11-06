@@ -1,0 +1,370 @@
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "../../../hooks/useNavigate";
+import { useSelector } from "react-redux";
+import { GoApp } from "../../../services/bridge";
+import {
+  applyNodeChanges,
+  Background,
+  Controls,
+  ReactFlow,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import EndpointNode from "./endpointNode";
+import NewEndpoint from "./newEndpoint";
+import EditEndpoint from "./editEndpoint";
+import GenerateCrud from "./generateCrud";
+import { FcPrevious } from "react-icons/fc";
+import {
+  Plus,
+  Save,
+  CheckCircle,
+  Loader2,
+  AlertCircle,
+  LayoutGrid,
+  Layers,
+  MoreVertical,
+  Cross,
+  Sun,
+  Moon,
+} from "lucide-react";
+import TurboStackScripting from "./blocEditor";
+import DarkModeToggle from "../../../components/darkModeToggle";
+
+const nodeType = { endpoint: EndpointNode };
+
+export default function ApiEditor({ projectName }) {
+  const navigateTo = useNavigate();
+  const isDarkMode = useSelector((state) => state.app.darkMode);
+  const [project, setProject] = useState(null);
+  const [nodes, setNodes] = useState([]);
+  const [toggleModal, setToggleModal] = useState("none");
+  const [toggleEditModal, setToggleEditModal] = useState("none");
+  const [toggleCrudModal, setToggleCrudModal] = useState("none");
+  const [toggleVisualScriptModal, setToggleVisualScriptModal] =
+    useState("none");
+  const [selectedEndpointIndex, setSelectedEndpointIndex] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const onNodesChange = useCallback(
+    (changes) => setNodes((ns) => applyNodeChanges(changes, ns)),
+    [],
+  );
+
+  useEffect(() => {
+    const loadProject = async () => {
+      const res = await GoApp.fetchProjectByName(projectName);
+      if (res) {
+        setProject(res);
+      }
+    };
+    if (!project) loadProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectName]);
+
+  const deleteEndpoint = useCallback((index) => {
+    setProject((prev) => {
+      const newEndpoints = [...(prev.rest_api?.endpoints || [])];
+      newEndpoints.splice(index, 1);
+      return {
+        ...prev,
+        rest_api: { ...prev.rest_api, endpoints: newEndpoints },
+      };
+    });
+    setToggleEditModal("none");
+  }, []);
+
+  const handleVisualScripting = useCallback((index) => {
+    setSelectedEndpointIndex(index);
+    setToggleVisualScriptModal("block");
+    setToggleModal("none");
+    setToggleEditModal("none");
+  }, []);
+
+  const handleEditEndpoint = useCallback((index) => {
+    setSelectedEndpointIndex(index);
+    setToggleEditModal("block");
+    setToggleModal("none");
+  }, []);
+
+  useEffect(() => {
+    const setter = (updatedNodes) => {
+      setNodes(updatedNodes);
+    };
+    if (project && project.rest_api?.endpoints) {
+      const updatedNodes = project.rest_api.endpoints.map((ep, index) => ({
+        id: `ep-${index}`,
+        type: "endpoint",
+        position: nodes[index]?.position || {
+          x: (index % 5) * 300,
+          y: Math.floor(index / 5) * 200,
+        },
+        data: {
+          ...ep,
+          onDelete: () => deleteEndpoint(index),
+          onEdit: () => handleEditEndpoint(index),
+          onScript: () => handleVisualScripting(index),
+        },
+      }));
+      setter(updatedNodes);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project]); // Added nodes to dependency array
+
+  const showToast = (message, type = "success") => {
+    setToast({ message, type });
+    if (type !== "loading") {
+      setTimeout(() => setToast(null), 3000);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const reorganizeNodes = () => {
+    setNodes((prevNodes) =>
+      prevNodes.map((node, index) => ({
+        ...node,
+        position: { x: (index % 5) * 300, y: Math.floor(index / 5) * 200 },
+      })),
+    );
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const saveApi = async () => {
+    showToast("Sauvegarde en cours...", "loading");
+    try {
+      await GoApp.saveProject(projectName, JSON.stringify(project));
+      showToast("API saved successfully !");
+    } catch (error) {
+      showToast("Erreur lors de la sauvegarde", error);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Sauvegarde (Ctrl+S)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        saveApi();
+      }
+      // Retour ou fermeture de modale (Escape)
+      if (e.key === "Escape") {
+        if (
+          toggleModal !== "none" ||
+          toggleEditModal !== "none" ||
+          toggleCrudModal !== "none"
+        ) {
+          setToggleModal("none");
+          setToggleEditModal("none");
+          setToggleCrudModal("none");
+        } else {
+          navigateTo("Dashboard");
+        }
+      }
+      // Réorganisation (Ctrl+Shift+L)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === "l"
+      ) {
+        e.preventDefault();
+        reorganizeNodes();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [
+    project,
+    toggleModal,
+    toggleEditModal,
+    toggleCrudModal,
+    saveApi,
+    reorganizeNodes,
+    navigateTo,
+  ]);
+  // const isDarkMode = useSelector((state)=>state.app.darkMode)
+  return (
+    <div className="flex w-screen h-screen flex-col bg-couleur3 dark:bg-gray-950 transition-colors duration-300">
+      <div className="p-3 pb-4 h-fit flex items-center justify-between fixed z-30 w-full border-b border-couleur1/10 dark:border-white/10 top-0  md:-top-16 md:hover:top-0 transition-all duration-300 ease-in-out bg-couleur3/90 dark:bg-couleur6/90 backdrop-blur-md rounded-b-2xl shadow-xl box-border group">
+
+        {/* Petit indicateur visuel au survol en bas de la barre (Desktop uniquement) */}
+        <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-couleur1 dark:bg-gray-700 text-couleur3 dark:text-gray-200 text-[10px] px-3 py-0.5 rounded-b-md opacity-70 group-hover:opacity-0 transition-opacity pointer-events-none font-mono hidden md:block">
+          Hover to expand editor bar
+        </div>
+
+        {/* Titre & Navigation */}
+        <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1 mr-2">
+          <button
+            className="p-2.5 rounded-xl border border-couleur1/20 dark:border-white/20 bg-couleur5 dark:bg-gray-800 text-couleur1 dark:text-gray-100 hover:bg-couleur1/10 dark:hover:bg-gray-700 transition-all duration-200 active:scale-95 shadow-xs cursor-pointer shrink-0"
+            onClick={() => navigateTo("Dashboard")}
+            title="Return to Dashboard"
+          >
+            <FcPrevious size={18} />
+          </button>
+
+          <h1 className="text-couleur1 dark:text-gray-100 text-lg md:text-2xl font-bold tracking-tight flex items-center gap-1.5 md:gap-2 truncate">
+            <span className="opacity-60 text-sm md:text-lg font-medium shrink-0">API Editor :</span>
+            <span className="truncate">{projectName}</span>
+          </h1>
+        </div>
+
+        {/* Actions & Menu */}
+        <div className="flex items-center gap-2 md:gap-3 relative shrink-0">
+          <button
+            className="flex gap-2 text-white bg-couleur1 hover:bg-couleur1/90 rounded-xl px-3 md:px-5 py-2.5 font-semibold transition-all duration-200 shadow-md hover:shadow-lg active:scale-95 items-center cursor-pointer text-sm"
+            onClick={saveApi}
+          >
+            <Save size={18} />
+            <span className="hidden sm:inline">Save API</span>
+          </button>
+
+          <div className="relative">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2.5 text-couleur1 dark:text-gray-200 border border-couleur1/20 dark:border-white/20 rounded-xl hover:bg-couleur1/10 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95 cursor-pointer"
+              title="More options"
+            >
+              <MoreVertical size={18} />
+            </button>
+
+            {isMenuOpen && (
+              <>
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsMenuOpen(false)}
+                ></div>
+
+                {/* Menu Dropdown */}
+                <div className="absolute right-0 mt-3 w-60 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-couleur1/10 dark:border-white/10 z-50 p-1.5 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <button
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
+                    onClick={() => {
+                      reorganizeNodes();
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LayoutGrid size={18} className="text-couleur1 dark:text-gray-300" />
+                    <span>Reorganize Layout</span>
+                  </button>
+
+                  <button
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
+                    onClick={() => {
+                      setToggleCrudModal("block");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <Layers size={18} className="text-couleur1 dark:text-gray-300" />
+                    <span>Auto CRUD</span>
+                  </button>
+
+                  <div className="h-px bg-gray-100 dark:bg-gray-700 my-1 mx-2"></div>
+
+                  <button
+                    className="w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-bold text-couleur1 dark:text-white hover:bg-couleur1/10 dark:hover:bg-gray-700/60 rounded-xl transition-colors cursor-pointer"
+                    onClick={() => {
+                      setToggleModal("block");
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <Plus size={18} />
+                    <span>Add Endpoint</span>
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* Modal de création */}
+      <div
+        className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
+      >
+        {project && (
+          <NewEndpoint
+            project={project}
+            setProject={setProject}
+            setToggle={setToggleModal}
+          />
+        )}
+      </div>
+
+      {/* Modal de modification */}
+      <div
+        className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleEditModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
+      >
+        {selectedEndpointIndex !== null && project && (
+          <EditEndpoint
+            index={selectedEndpointIndex}
+            project={project}
+            setProject={setProject}
+            setToggle={setToggleEditModal}
+          />
+        )}
+      </div>
+
+      {/* Modal de génération CRUD */}
+      <div
+        className={`fixed top-20 left-1/2 -translate-x-1/2 z-20 transition-all duration-300 transform ${toggleCrudModal === "block" ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none invisible"}`}
+      >
+        {project && (
+          <GenerateCrud
+            project={project}
+            setProject={setProject}
+            setToggle={setToggleCrudModal}
+          />
+        )}
+      </div>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div
+          className={`fixed bottom-10 right-10 z-50 flex items-center gap-3 px-5 py-3 rounded-lg shadow-2xl transition-all duration-300 border ${toast.type === "error"
+            ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
+            : toast.type === "loading"
+              ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400"
+              : "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
+            }`}
+        >
+          {toast.type === "loading" ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : toast.type === "error" ? (
+            <AlertCircle size={18} />
+          ) : (
+            <CheckCircle size={18} />
+          )}
+          <span className="font-medium text-sm">{toast.message}</span>
+        </div>
+      )}
+
+      <div className="w-auto h-full bg-white dark:bg-gray-900 ">
+        <ReactFlow
+          nodes={nodes}
+          onNodesChange={onNodesChange}
+          nodeTypes={nodeType}
+          fitView
+          colorMode={isDarkMode ? "dark" : "light"}
+        >
+          <Controls />
+          <Background variant="lines" gap={40} size={3} />
+        </ReactFlow>
+      </div>
+      <div
+        className="fixed z-10 w-screen "
+        style={{
+          display: toggleVisualScriptModal,
+        }}
+      >
+
+        <TurboStackScripting
+          setProjet={setProject}
+          endpoint={selectedEndpointIndex}
+          project={project}
+          setToggleVisualScriptModal={setToggleVisualScriptModal}
+          colorMode={isDarkMode ? "dark" : "light"}
+        ></TurboStackScripting>
+      </div>
+    </div>
+  );
+}

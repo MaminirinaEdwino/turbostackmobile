@@ -1,0 +1,116 @@
+import { Folder, Plus, Search, LayoutGrid } from "lucide-react";
+import SideMenu from "../../components/sideMenu";
+import { GoApp } from "../../services/bridge";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setActualProject, setActualWindow } from "../../appSlice";
+import ProjectListHeader from "./projectListHeader";
+import ProjectCard from "./projectCard";
+
+export default function ProjectList() {
+  const [projectList, setProjects] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const response = await GoApp.fetchProjects();
+        if (response != null) {
+          setProjects(response);
+        }
+      } catch (err) {
+        console.error("Erreur Turbo Stack:", err);
+      }
+    };
+    loadData();
+  }, []);
+
+  const handleProjectSelection = (projectName) => {
+    dispatch(setActualProject(projectName));
+    dispatch(setActualWindow("Dashboard"));
+  };
+  const handleDeleteProject = async (projectName) => {
+    await GoApp.deleteProject(projectName)
+    const loadData = async () => {
+      try {
+        const response = await GoApp.fetchProjects();
+        if (response != null) {
+          setProjects(response);
+        }
+      } catch (err) {
+        console.error("Erreur Turbo Stack:", err);
+      }
+    };
+    loadData();
+  }
+
+  const filteredProjects = projectList.filter((name) =>
+    name.nom.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  return (
+    <div className="flex h-screen w-full font-san bg-couleur3 dark:bg-gray-950 transition-colors duration-300 overflow-hidden">
+      <SideMenu />
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 md:mb-10 gap-4 md:gap-6">
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold text-couleur1 mb-1 md:mb-2 dark:text-couleur3/80">
+              Projects
+            </h1>
+            <p className="text-xs md:text-sm text-couleur1 opacity-60 max-w-md dark:text-couleur3/80">
+              Browse and manage all your project stacks, APIs and database
+              models.
+            </p>
+          </div>
+
+          <ProjectListHeader
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            dispatch={dispatch}
+            setActualWindow={setActualWindow}
+          ></ProjectListHeader>
+        </div>
+
+        {/* Project Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          {filteredProjects.map((name, index) => (
+            <ProjectCard
+              key={index + name}
+              index={index}
+              name={name}
+              handleDelete={handleDeleteProject}
+              handleProjectSelection={handleProjectSelection}
+            ></ProjectCard>
+          ))}
+
+          {/* Empty State / Add Card */}
+          {filteredProjects.length === 0 && !searchTerm && (
+            <div
+              onClick={() => dispatch(setActualWindow("New Project"))}
+              className="group flex flex-col items-center justify-center border-2 border-dashed border-couleur1/20 rounded-2xl p-6 md:p-10 cursor-pointer hover:border-couleur1/50 hover:bg-white transition-all"
+            >
+              <Plus
+                size={32}
+                className="text-couleur1 opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all mb-2 md:mb-4 md:size-10"
+              />
+              <span className="text-xs md:text-sm font-bold text-couleur1 opacity-40">
+                Create your first project
+              </span>
+            </div>
+          )}
+        </div>
+
+        {filteredProjects.length === 0 && searchTerm && (
+          <div className="flex flex-col items-center justify-center py-12 md:py-24 text-couleur1 opacity-40 text-center">
+            <Search size={36} className="mb-3 md:size-12 md:mb-4" />
+            <p className="text-sm md:text-lg italic">
+              No projects found matching "{searchTerm}"
+            </p>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

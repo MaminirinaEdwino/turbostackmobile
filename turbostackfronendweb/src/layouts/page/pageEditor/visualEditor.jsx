@@ -1,0 +1,641 @@
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useMemo } from "react";
+import { STYLE_CONTROLS, BLOCK_TYPES, TAG_STYLE_GROUPS } from "./defaultVar";
+import { parseStyles } from './utilsFunc';
+import { stringifyStyles } from './utilsFunc';
+import Block from "./components/block";
+import AddChild from "./components/addChild";
+import DeleteBlock from "./components/deleteBlock";
+import ChangeTabBtn from "./components/changeTabBtn";
+import BlockTab from "./components/blockTab";
+import GlobalTab from "./components/globalTab";
+import PropertiesTab from "./components/propertieTab";
+import PseudoClassTab from "./components/pseudoClassTab";
+import HtmlPropertiesTab from "./components/htmlPropertieTab";
+import TreeBlocks from "./components/treeBlocks";
+import { Globe, Layers, Settings2, Type } from "lucide-react";
+
+
+export default function VisualEditor({
+    content,
+    pageStyles = "",
+    onPageStylesChange,
+    onChange,
+    availablePages = [],
+    availableComponents = [],
+    activeBlock,
+    setActiveBlock,
+    activeTab,
+    setActiveTab,
+    activeViewport = "desktop",
+    allowedTabs = ["blocks", "global", "properties", "pseudo classes"],
+    showToast,
+    editingtype,
+    activePage
+}) {
+    const [blocks, setBlocks] = useState([]);
+    const [draggedId, setDraggedId] = useState(null);
+    const [selectedGlobalTag, setSelectedGlobalTag] = useState("body");
+    const [selectedPseudoTag, setSelectedpseudoTag] = useState("");
+    const [copiedStyle, setCopiedStyle] = useState(null);
+
+    const handleCopyStyle = (styles) => {
+        setCopiedStyle(styles);
+        if (showToast) showToast("Style copié avec succès !");
+    };
+
+    const handlePasteStyle = (id) => {
+        if (!copiedStyle) return;
+        updateBlock(id, { styles: copiedStyle });
+        if (showToast) showToast("Style appliqué !");
+    };
+    const pasteStyleToTablet = (id) => {
+        let styles = JSON.parse(currentActiveBlock.styles)
+        styles.tablet = styles[activeViewport]
+        updateBlock(id, { styles: JSON.stringify(styles) })
+        if (showToast) showToast("Style applied to Tablet version !");
+    }
+    const pasteStyleToDeskTop = (id) => {
+        let styles = JSON.parse(currentActiveBlock.styles)
+        styles.desktop = styles[activeViewport]
+        updateBlock(id, { styles: JSON.stringify(styles) })
+        if (showToast) showToast("Style applied to Tablet version !");
+    }
+    const pasteStyleToMobile = (id) => {
+        let styles = JSON.parse(currentActiveBlock.styles)
+        styles.mobile = styles[activeViewport]
+        updateBlock(id, { styles: JSON.stringify(styles) })
+        if (showToast) showToast("Style applied to Tablet version !");
+    }
+
+    const availableSelectors = useMemo(() => {
+        const tags = new Set(["body"]);
+        const classes = new Set();
+        const ids = new Set();
+
+        const collect = (list) => {
+            list.forEach(b => {
+                if (TAG_STYLE_GROUPS[b.tag]) tags.add(b.tag);
+                if (b.className) b.className.split(/\s+/).filter(Boolean).forEach(cls => classes.add(`.${cls}`));
+                if (b.htmlId) ids.add(`#${b.htmlId}`);
+                if (b.children) collect(b.children);
+            });
+        };
+        collect(blocks);
+        return {
+            tags: Array.from(tags),
+            classes: Array.from(classes),
+            ids: Array.from(ids)
+        };
+    }, [blocks]);
+
+    // Initialisation unique des blocs à partir du HTML reçu pour éviter les boucles infinies
+    useEffect(() => {
+        if (!content) return;
+
+        let extracted = [];
+        if (Array.isArray(content)) {
+            extracted = content;
+        } else {
+            try {
+                // Tente de parser comme JSON (pour la compatibilité)
+                extracted = JSON.parse(content);
+                if (!Array.isArray(extracted)) throw new Error();
+            } catch (e) {
+                // Fallback : parsing HTML si ce n'est pas encore un tableau/JSON
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(content, "text/html");
+                const parseRecursive = (el) => {
+                    const clone = el.cloneNode(true);
+                    Array.from(clone.children).forEach(c => c.remove());
+                    return {
+                        id: el.getAttribute("data-block-id") || Math.random().toString(36).substr(2, 9),
+                        tag: el.tagName.toLowerCase(),
+                        content: clone.innerHTML.trim(),
+                        href: el.getAttribute("href") || "",
+                        className: el.className,
+                        styles: el.getAttribute("style") || "",
+                        children: Array.from(el.children).map(child => parseRecursive(child))
+                    };
+                };
+                extracted = Array.from(doc.body.children).map(parseRecursive);
+            }
+        }
+
+        // Comparaison pour éviter de réinitialiser l'état pendant la saisie (perte de focus)
+        const currentSerialized = JSON.stringify(blocks);
+        const incomingSerialized = JSON.stringify(extracted);
+
+        // On ne met à jour que si les blocs ont réellement changé (ex: changement de page)
+        if (blocks.length === 0 || currentSerialized !== incomingSerialized) {
+            setBlocks(extracted);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [content]);
+
+    // Synchronisation vers le parent
+    const sync = (currentBlocks) => {
+        // On renvoie le tableau directement
+        if (onChange) onChange(currentBlocks);
+    };
+
+    const selectBlock = (id) => {
+        if (setActiveBlock) setActiveBlock(id);
+        if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
+    };
+
+    // Gestion du Drag and Drop
+    const handleDragStart = (e, id) => {
+        setDraggedId(id);
+        // Stocker l'index dans le dataTransfer pour une récupération fiable au drop
+        e.dataTransfer.setData("sourceId", id);
+        e.dataTransfer.effectAllowed = "move";
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+    };
+
+    const findBlock = (list, id) => {
+        for (const b of list) {
+            if (b.id === id) return b;
+            if (b.children) {
+                const found = findBlock(b.children, id);
+                if (found) return found;
+            }
+        }
+        return null;
+    };
+    const indentAsChild = (list, id) => {
+        let targetindex = 0
+        const sourceIndex = list.findIndex((b) => b.id == id)
+        if (list.length > 0 && sourceIndex > 0) {
+            targetindex = sourceIndex - 1
+        }
+        const findAndRemove = (list) => {
+            let foundBlock = null;
+            const newList = list.filter(b => {
+                if (b.id === id) {
+                    foundBlock = b;
+                    return false;
+                }
+                return true;
+            }).map(b => {
+                if (b.children && b.children.length > 0) {
+                    const [subList, subFound] = findAndRemove(b.children);
+                    if (subFound) foundBlock = subFound;
+                    return { ...b, children: subList };
+                }
+                return b;
+            });
+            return [newList, foundBlock];
+        };
+
+        const [listWithoutSource, blockToMove] = findAndRemove(blocks);
+        if (listWithoutSource[targetindex].children == null) {
+            listWithoutSource[targetindex].children = []
+            listWithoutSource[targetindex].children.push(blockToMove)
+        } else {
+            listWithoutSource[targetindex].children.push(blockToMove)
+        }
+        setBlocks(listWithoutSource)
+        sync(listWithoutSource)
+    }
+
+    const handleDrop = (e, targetId) => {
+        e.preventDefault();
+        const sourceId = e.dataTransfer.getData("sourceId");
+
+        if (!sourceId || sourceId === targetId) return;
+
+        const findAndRemove = (list) => {
+            let foundBlock = null;
+            const newList = list.filter(b => {
+                if (b.id === sourceId) {
+                    foundBlock = b;
+                    return false;
+                }
+                return true;
+            }).map(b => {
+                if (b.children && b.children.length > 0) {
+                    const [subList, subFound] = findAndRemove(b.children);
+                    if (subFound) foundBlock = subFound;
+                    return { ...b, children: subList };
+                }
+                return b;
+            });
+            return [newList, foundBlock];
+        };
+
+        const [listWithoutSource, blockToMove] = findAndRemove(blocks);
+
+        // Empêcher de glisser un parent dans son propre enfant (ou si source non trouvée)
+        if (!blockToMove || !findBlock(listWithoutSource, targetId)) {
+            setDraggedId(null);
+            return;
+        }
+
+        const insertAtTarget = (list) => {
+            const index = list.findIndex(b => b.id === targetId);
+            if (index !== -1) {
+                const newList = [...list];
+                newList.splice(index, 0, blockToMove);
+                return newList;
+            }
+            return list.map(b => ({
+                ...b,
+                children: b.children ? insertAtTarget(b.children) : []
+            }));
+        };
+
+        const updated = insertAtTarget(listWithoutSource);
+        setBlocks(updated);
+        sync(updated);
+        setDraggedId(null);
+    };
+
+    const updateBlock = (id, fields) => {
+        const updateTree = (list) => {
+            return list.map(b => {
+                if (b.id === id) return { ...b, ...fields };
+                if (b.children) return { ...b, children: updateTree(b.children) };
+                return b;
+            });
+        };
+        const updated = updateTree(blocks);
+        setBlocks(updated);
+        sync(updated);
+    };
+
+    const removeBlock = (id) => {
+        const removeFromTree = (list) => {
+            return list.filter(b => b.id !== id).map(b => {
+                if (b.children) return { ...b, children: removeFromTree(b.children) };
+                return b;
+            });
+        };
+        const updated = removeFromTree(blocks);
+        setBlocks(updated);
+        sync(updated);
+        if (activeBlock === id) {
+            if (setActiveBlock) setActiveBlock(null);
+            if (setActiveTab) {
+                if (allowedTabs.includes("blocks")) setActiveTab("blocks");
+                else if (allowedTabs.includes("global")) setActiveTab("global");
+            }
+        }
+    };
+
+    const addBlock = (type, isComponent = false) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        let newBlock;
+
+        if (isComponent) {
+            newBlock = {
+                id,
+                tag: "div",
+                content: "",
+                className: `component-${type.nom?.toLowerCase().replace(/\s+/g, '-')}`,
+                styles: "",
+                children: type.content ? JSON.parse(JSON.stringify(type.content)) : []
+            };
+        } else {
+            if (type.isFormPost) {
+                let childBlock = []
+                type.models.map(mdl => {
+                    mdl.champs.map(field => {
+                        childBlock.push({
+                            id: Math.random().toString(36).substr(2, 9),
+                            tag: "div",
+                            href: type.defaultHref || "",
+                            className: "",
+                            styles: "",
+                            children: [
+                                {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: "label",
+                                    content: field.nom,
+                                    for: "id_" + field.nom,
+                                    className: "",
+                                    styles: "",
+                                    children: [],
+                                    inputType: (type.inputType || "")
+                                }, {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: (field.type == "int" || field.type == "string") && "input",
+                                    // content: field.nom,
+                                    placeholder: field.nom,
+                                    className: "",
+                                    styles: "",
+                                    htmlId: "id_" + field.nom,
+                                    // children: [],
+                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text"),
+                                    value: ""
+                                }
+                            ]
+                        })
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        value: "send",
+                        className: "",
+                        styles: "",
+                        inputType: "submit"
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        value: "clear",
+                        className: "",
+                        styles: "",
+                        inputType: "reset"
+                    })
+                })
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    styles: "",
+                    children: childBlock,
+                    method: "post",
+                    action: type.uri
+                }
+            } else {
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    href: type.defaultHref || "",
+                    className: "",
+                    styles: "",
+                    children: [],
+                    inputType: (type?.inputType || "")
+                };
+            }
+        }
+
+        const updated = [...blocks, newBlock];
+        setBlocks(updated);
+        sync(updated);
+        if (setActiveBlock) setActiveBlock(id);
+        if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
+    };
+
+    const addChild = (parentId, type, isComponent = false) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        let newBlock;
+
+        if (isComponent) {
+            newBlock = {
+                id,
+                tag: "div",
+                content: "",
+                className: `component-${type.nom?.toLowerCase().replace(/\s+/g, '-')}`,
+                styles: "",
+                children: type.content ? JSON.parse(JSON.stringify(type.content)) : []
+            };
+        } else {
+            if (type.isFormPost) {
+                let childBlock = []
+                type.models.map(mdl => {
+                    mdl.champs.map(field => {
+                        childBlock.push({
+                            id: Math.random().toString(36).substr(2, 9),
+                            tag: "div",
+                            href: type.defaultHref || "",
+                            className: "",
+                            styles: "",
+                            children: [
+                                {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: "div",
+                                    content: field.nom,
+                                    className: "",
+                                    styles: "",
+                                    children: [],
+                                    inputType: (type.inputType || "")
+                                }, {
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    tag: (field.type == "int" || field.type == "string") && "input",
+                                    // content: field.nom,
+                                    placeholder: field.nom,
+                                    className: "",
+                                    styles: "",
+                                    // children: [],
+                                    inputType: (field.type == "int" ? "number" : field.nom.includes("pass") ? "password" : field.nom.includes("email") ? "email" : "text")
+                                }
+                            ]
+                        })
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        content: "send",
+                        className: "",
+                        styles: "",
+                        inputType: "submit"
+                    })
+                    childBlock.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tag: "input",
+                        content: "clear",
+                        className: "",
+                        styles: "",
+                        inputType: "reset"
+                    })
+                })
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    styles: "",
+                    children: childBlock,
+                    method: "post",
+                    action: type.uri
+                }
+            } else {
+                newBlock = {
+                    id,
+                    tag: type.tag,
+                    content: type.defaultContent,
+                    href: type.defaultHref || "",
+                    className: "",
+                    styles: "",
+                    children: [],
+                    inputType: (type?.inputType || "")
+                };
+            }
+        }
+
+        const updateTree = (list) => {
+            return list.map(b => {
+                if (b.id === parentId) return { ...b, children: [...(b.children || []), newBlock] };
+                if (b.children) return { ...b, children: updateTree(b.children) };
+                return b;
+            });
+        };
+        const updated = updateTree(blocks);
+        setBlocks(updated);
+        sync(updated);
+        if (setActiveBlock) setActiveBlock(id);
+        if (setActiveTab && allowedTabs.includes("properties")) setActiveTab("properties");
+    };
+
+    const getIconForTag = (tag) => {
+        const type = BLOCK_TYPES.find(t => t.tag === tag);
+        return type ? type.icon : <Type size={14} />;
+    };
+
+    const currentActiveBlock = findBlock(blocks, activeBlock);
+
+    const handleStyleChange = (prop, value) => {
+        if (!currentActiveBlock) return;
+        let stylesObj = { desktop: {}, tablet: {}, mobile: {} };
+        try {
+            if (currentActiveBlock.styles && currentActiveBlock.styles.trim().startsWith('{')) {
+                stylesObj = { ...stylesObj, ...JSON.parse(currentActiveBlock.styles) };
+            } else {
+                stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
+            }
+        } catch (e) {
+            stylesObj.desktop = parseStyles(currentActiveBlock.styles || "");
+        }
+
+        const vp = activeViewport || "desktop";
+        stylesObj[vp] = { ...(stylesObj[vp] || {}), [prop]: value };
+        updateBlock(currentActiveBlock.id, { styles: JSON.stringify(stylesObj) });
+    };
+
+    const handlePageStyleChange = (prop, value) => {
+        let allStyles = { desktop: {}, tablet: {}, mobile: {} };
+        try {
+            if (pageStyles && pageStyles.trim().startsWith('{')) {
+                allStyles = { ...allStyles, ...JSON.parse(pageStyles) };
+            } else {
+                // Migration ancien format
+                allStyles.desktop[selectedGlobalTag] = pageStyles;
+            }
+        } catch (e) {
+            allStyles.desktop[selectedGlobalTag] = pageStyles;
+        }
+
+        const vp = activeViewport || "desktop";
+        if (!allStyles[vp]) allStyles[vp] = {};
+
+        const currentTagStyles = parseStyles(allStyles[vp][selectedGlobalTag] || "");
+        const updatedTagStyles = { ...currentTagStyles, [prop]: value };
+        allStyles[vp][selectedGlobalTag] = stringifyStyles(updatedTagStyles);
+
+        onPageStylesChange(JSON.stringify(allStyles));
+    };
+    const handlePseudoClassStyleChange = (prop, value) => {
+        let allStyles = { desktop: {}, tablet: {}, mobile: {} };
+        try {
+            if (pageStyles && pageStyles.trim().startsWith('{')) {
+                allStyles = { ...allStyles, ...JSON.parse(pageStyles) };
+            } else {
+                // Migration ancien format
+                allStyles.desktop[selectedGlobalTag] = pageStyles;
+            }
+        } catch (e) {
+            allStyles.desktop[selectedGlobalTag] = pageStyles;
+        }
+
+        const vp = activeViewport || "desktop";
+        if (!allStyles[vp]) allStyles[vp] = {};
+
+        const currentTagStyles = parseStyles(allStyles[vp][selectedPseudoTag] || "");
+        const updatedTagStyles = { ...currentTagStyles, [prop]: value };
+        allStyles[vp][selectedPseudoTag] = stringifyStyles(updatedTagStyles);
+
+        onPageStylesChange(JSON.stringify(allStyles));
+    };
+
+    const renderBlocksList = (blocksList, level = 0) => {
+
+        return blocksList.map((block) => (
+            <React.Fragment key={block.id}>
+                <TreeBlocks activeBlock={activeBlock} addChild={addChild} block={block} blocks={blocks} draggedId={draggedId} getIconForTag={getIconForTag} handleDragOver={handleDragOver} handleDragStart={handleDragStart} handleDrop={handleDrop} indentAsChild={indentAsChild} level={level} removeBlock={removeBlock} selectBlock={selectBlock} setDraggedId={setDraggedId} />
+                {/* <button onClick={()=>handleShowChild()}>d</button> */}
+                <div id={block.id + "_child_div"}>
+                    {block.children && block.children.length > 0 && renderBlocksList(block.children, level + 1)}
+                </div>
+            </React.Fragment>
+        ));
+    };
+
+    return (
+        <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-2 duration-500 w-full">
+            {/* <>{activeTab}</> */}
+            {allowedTabs.length > 1 && (
+                <div className="flex bg-white/50 justify-between dark:bg-gray-800 p-1 rounded-xl border border-couleur1/10 shadow-sm">
+                    {allowedTabs.includes("blocks") && <ChangeTabBtn icon={<Layers size={14} />} value={"Structure"} setter={setActiveTab} activeTab={activeTab} newVal={'blocks'} />}
+                    {allowedTabs.includes("global") && <ChangeTabBtn icon={<Globe size={14} />} value={"Global"} setter={setActiveTab} activeTab={activeTab} newVal={"global"} />}
+                    {allowedTabs.includes("properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"properties"} />}
+                    {allowedTabs.includes("HTML properties") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"HTML Properties"} setter={setActiveTab} activeTab={activeTab} newVal={"HTML properties"} />}
+                    {allowedTabs.includes("pseudo classes") && <ChangeTabBtn icon={<Settings2 size={14} />} value={"Pseudo class"} setter={setActiveTab} activeTab={activeTab} newVal={"pseudo classes"} />}
+                </div>
+            )}
+
+            {activeTab === "blocks" && allowedTabs.includes("blocks") ? (
+                <BlockTab blocks={blocks} renderBlocksList={renderBlocksList} addBlock={addBlock} availableComponents={availableComponents} setGlobalStyle={onPageStylesChange} editingtype={editingtype} activePage={activePage} />
+            ) : activeTab === "global" && allowedTabs.includes("global") ? (
+                <GlobalTab
+                    availableSelectors={availableSelectors}
+                    activeViewport={activeViewport}
+                    setSelectedGlobalTag={setSelectedGlobalTag}
+                    handlePageStyleChange={handlePageStyleChange}
+                    pageStyles={pageStyles}
+                    selectedGlobalTag={selectedGlobalTag}
+                />
+            ) : allowedTabs.includes("properties") && activeTab === "properties" ? (
+                <PropertiesTab
+                    availablePages={availablePages}
+                    activeViewport={activeViewport}
+                    currentActiveBlock={currentActiveBlock}
+                    getIconForTag={getIconForTag}
+                    handleStyleChange={handleStyleChange}
+                    updateBlock={updateBlock}
+                    onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
+                    onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
+                    hasCopiedStyle={!!copiedStyle}
+                    styleToTablet={() => pasteStyleToTablet(currentActiveBlock?.id)}
+                    styleToDesktop={() => pasteStyleToDeskTop(currentActiveBlock?.id)}
+                    styleToModbile={() => pasteStyleToMobile(currentActiveBlock?.id)}
+                    setCurrentActiveBlock={setActiveBlock}
+                    activePage={activePage}
+                />
+            ) : allowedTabs.includes("pseudo classes") && activeTab === "pseudo classes" ?
+                <>
+                    <PseudoClassTab
+                        currentBlock={currentActiveBlock}
+                        handlePageStyleChange={handlePseudoClassStyleChange}
+                        setSelectedGlobalTag={setSelectedpseudoTag}
+                        pageStyles={pageStyles}
+                        selectedGlobalTag={selectedPseudoTag}
+                        activeViewport={activeViewport}
+                    />
+                </> : allowedTabs.includes("HTML properties") && activeTab === "HTML properties" ?
+                    <>
+                        <HtmlPropertiesTab
+                            availablePages={availablePages}
+                            activeViewport={activeViewport}
+                            currentActiveBlock={currentActiveBlock}
+                            getIconForTag={getIconForTag}
+                            handleStyleChange={handleStyleChange}
+                            updateBlock={updateBlock}
+                            onCopyStyle={() => handleCopyStyle(currentActiveBlock?.styles)}
+                            onPasteStyle={() => handlePasteStyle(currentActiveBlock?.id)}
+                            hasCopiedStyle={!!copiedStyle}
+                            styleToTablet={() => pasteStyleToTablet(currentActiveBlock?.id)}
+                            styleToDesktop={() => pasteStyleToDeskTop(currentActiveBlock?.id)}
+                            styleToModbile={() => pasteStyleToMobile(currentActiveBlock?.id)}
+                            setCurrentActiveBlock={setActiveBlock}
+                            activePage={activePage}
+                        />
+                    </> : null}
+        </div >
+    );
+}

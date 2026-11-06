@@ -1,0 +1,23 @@
+export const parseStyles = (styleString) => {
+    if (!styleString) return {};
+    return styleString.split(';').reduce((acc, rule) => {
+        const parts = rule.split(':');
+        if (parts.length < 2) return acc;
+        const prop = parts[0].trim();
+        const value = parts.slice(1).join(':').trim();
+        if (prop && value) acc[prop] = value;
+        return acc;
+    }, {});
+};
+
+export const stringifyStyles = (styleObj) => {
+    return Object.entries(styleObj)
+        // eslint-disable-next-line no-unused-vars
+        .filter(([_, v]) => v && v !== "")
+        .map(([k, v]) => `${k}: ${v}`)
+        .join('; ');
+};
+export const touppertemplatevar = (champs)=>{
+    return `{{ .${champs[0].toUpperCase()}${champs.split(champs[0])[1]} }}`
+}
+
