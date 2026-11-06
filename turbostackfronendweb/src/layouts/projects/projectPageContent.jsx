@@ -15,22 +15,22 @@ export default function ProjectPageView({ project }) {
       stats.push({
         title: "DB Models",
         total: project.bdd?.models?.length || 0,
-        icon: <Database size={24} />,
+        icon: <Database size={15} />,
         onClick: () => dispatch(setActualWindow("db_editor")),
       });
     }
 
-    if (project.type === "api"|| project.type === "webapp") {
+    if (project.type === "api" || project.type === "webapp") {
       stats.push({
         title: "DB Models",
         total: project.bdd?.models?.length || 0,
-        icon: <Database size={24} />,
+        icon: <Database size={15} />,
         onClick: () => dispatch(setActualWindow("db_editor")),
       });
       stats.push({
         title: "Endpoints",
         total: project.rest_api.endpoints?.length || 0,
-        icon: <Settings size={24} />,
+        icon: <Settings size={15} />,
         onClick: () => dispatch(setActualWindow("api_editor")),
       });
     }
@@ -39,29 +39,28 @@ export default function ProjectPageView({ project }) {
       stats.push({
         title: "App Pages",
         total: project.web_app.pages?.length || 0,
-        icon: <FileText size={24} />,
+        icon: <FileText size={15} />,
         onClick: () => dispatch(setActualWindow("page_editor")),
       });
       stats.push({
         title: "App Components",
         total: project.web_app.composant?.length || 0,
-        icon: <LucidePuzzle size={24} />,
+        icon: <LucidePuzzle size={15} />,
         onClick: () => dispatch(setActualWindow("page_editor")),
       });
-      
     }
 
     if (project.type === "static") {
       stats.push({
         title: "Static Pages",
         total: project.site_statique.pages?.length || 0,
-        icon: <FileText size={24} />,
+        icon: <FileText size={15} />,
         onClick: () => dispatch(setActualWindow("page_editor")),
       });
       stats.push({
         title: "Static Components",
         total: project.site_statique.composants?.length || 0,
-        icon: <LucidePuzzle size={24} />,
+        icon: <LucidePuzzle size={15} />,
         onClick: () => dispatch(setActualWindow("page_editor")),
       });
     }
@@ -71,21 +70,22 @@ export default function ProjectPageView({ project }) {
   const stats = getStats();
 
   return (
-    <div className="m-2 flex flex-col gap-8">
-      <div className="flex flex-col gap-5">
+    <div className="m-1 sm:m-2 flex flex-col gap-4 sm:gap-6">
+      <div className="flex flex-col gap-3.5 sm:gap-5">
         <div className="lg:col-span-1">
           <ProjectResume nom={project.nom} type={project.type} />
-          
         </div>
-        <div className="lg:col-span-2 flex items-start gap-4 p-5 rounded-xl border shadow-sm border-couleur7 bg-couleur5 dark:bg-couleur6/10 dark:border-none   transition-all">
-          <div className="w-12 h-12 rounded-lg flex items-center justify-center border-2 border-couleur1 text-couleur1 shrink-0 dark:text-white">
-            <FileText size={20} />
+        
+        {/* Boîte de description allégée et optimisée mobile */}
+        <div className="lg:col-span-2 flex items-start gap-3 p-3.5 sm:p-5 rounded-xl border shadow-2xs border-couleur7 bg-couleur5 dark:bg-couleur6/10 dark:border-none transition-all">
+          <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center border-2 border-couleur1 text-couleur1 shrink-0 dark:text-white">
+            <FileText size={16} className="sm:w-[20px] sm:h-[20px]" />
           </div>
-          <div className="flex flex-col ">
-            <span className="text-xs font-bold text-couleur1 opacity-50 uppercase tracking-wider mb-1 dark:text-white/80">
+          <div className="flex flex-col">
+            <span className="text-[10px] sm:text-xs font-bold text-couleur1 opacity-50 uppercase tracking-wider mb-0.5 sm:mb-1 dark:text-white/80">
               Description
             </span>
-            <p className="text-couleur1 text-sm md:text-base leading-relaxed italic ">
+            <p className="text-couleur1 text-xs sm:text-sm md:text-base leading-relaxed italic">
               {project.description ||
                 "No description provided for this project."}
             </p>
@@ -94,7 +94,7 @@ export default function ProjectPageView({ project }) {
       </div>
 
       {stats.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6">
           {stats.map((stat, i) => (
             <StatCard
               key={i}
@@ -106,8 +106,6 @@ export default function ProjectPageView({ project }) {
           ))}
         </div>
       )}
-
-      {/* {project.type === "webapp" && <BDDProjectInterface project={project}></BDDProjectInterface>} */}
     </div>
   );
 }
